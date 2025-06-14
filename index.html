@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Muhammad Sami - Portfolio</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div class="background"></div>
+    <div class="content">
+        <h1>Welcome to Muhammad Sami's Portfolio</h1>
+        <p>Explore my work and projects.</p>
+        <form class="upload-form" action="/upload" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" required />
+            <button type="submit">Upload</button>
+        </form>
+        <div class="portfolio">
+            <h2>My Work</h2>
+            <ul id="portfolio-list"></ul>
+        </div>
+    </div>
+    <script>
+        async function fetchPortfolio() {
+            try {
+                const response = await fetch('/uploads');
+                if (!response.ok) throw new Error('Failed to fetch portfolio');
+                const parser = new DOMParser();
+                const text = await response.text();
+                // We expect HTML page listing files, extract links
+                const doc = parser.parseFromString(text, 'text/html');
+                const anchors = doc.querySelectorAll('a');
+                const portfolioList = document.getElementById('portfolio-list');
+                portfolioList.innerHTML = '';
+                anchors.forEach(anchor => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = anchor.href;
+                    a.target = "_blank";
+                    a.textContent = anchor.textContent;
+                    li.appendChild(a);
+                    portfolioList.appendChild(li);
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        fetchPortfolio();
+    </script>
+</body>
+</html>
+
